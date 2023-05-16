@@ -1,15 +1,60 @@
 function onSceneLoaded() {
   const raycaster = document.querySelector("[ar-raycaster]");
   const cursor = document.querySelector("#cursor");
+  const obj = document.querySelector("#obj");
+  getWorldPosition(obj);
+  raycaster.components = { ...raycaster.components, ...cursor };
   raycaster.addEventListener("raycaster-intersection", (event) => {
-    console.log(event);
-    cursor.setAttribute("position", event.detail.intersections[0].point);
+    console.log(event.target.components);
+    // obj.setAttribute("position", event.target.components.position.data);
   });
+
+  let firstTime = true;
+  // raycaster.addEventListener("click", () => {
+  //   console.dir(raycaster.components);
+  //   const target = raycaster.components.cursor.position;
+
+  //   if (firstTime) {
+  //     obj.setAttribute("position", target);
+  //     firstTime = false;
+  //   }
+  // });
 }
 document.addEventListener("DOMContentLoaded", function (event) {
   const scene = document.querySelector("a-scene");
   scene.addEventListener("loaded", onSceneLoaded);
+  if (window.DeviceOrientationEvent) {
+    // Listen for device orientation changes
+    window.addEventListener("deviceorientation", handleDeviceOrientation, true);
+  } else {
+    console.log("DeviceOrientation API not supported");
+  }
+
+  function handleDeviceOrientation(event) {
+    // Extract rotation values
+    var alpha = event.alpha; // Z-axis rotation
+    var beta = event.beta; // X-axis rotation
+    var gamma = event.gamma; // Y-axis rotation
+
+    // Update camera rotation based on device rotation
+    var cameraEl = document.querySelector("a-entity[camera]");
+    cameraEl.setAttribute("rotation", {
+      x: beta,
+      y: gamma,
+      z: alpha,
+    });
+  }
 });
-function loadPosition(e) {
-  console.log(e);
+
+function getWorldPosition(obj) {
+  // local position
+  obj.getAttribute("position");
+
+  const mesh = obj.object3D;
+  const worldpos = new THREE.Vector3();
+
+  console.log(worldpos);
+  mesh.getWorldPosition(worldpos);
 }
+
+// addEventListener('raycaster-intersected'
