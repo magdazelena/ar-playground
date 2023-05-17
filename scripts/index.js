@@ -2,11 +2,10 @@ function onSceneLoaded() {
   const raycaster = document.querySelector("[ar-raycaster]");
   const cursor = document.querySelector("#cursor");
   const obj = document.querySelector("#obj");
-  getWorldPosition(obj);
-  raycaster.components = { ...raycaster.components, ...cursor };
   raycaster.addEventListener("raycaster-intersection", (event) => {
     console.log(event.target.components);
-    // obj.setAttribute("position", event.target.components.position.data);
+    const pos = this.camera.el.object3D.getWorldPosition();
+    obj.setAttribute("position", pos);
   });
 
   let firstTime = true;
