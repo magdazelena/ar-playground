@@ -4,20 +4,17 @@ function onSceneLoaded() {
   const obj = document.querySelector("#obj");
   raycaster.addEventListener("raycaster-intersection", (event) => {
     console.log(event.target.components);
-    const pos = this.camera.el.object3D.getWorldPosition();
-    obj.setAttribute("position", pos);
   });
 
   let firstTime = true;
-  // raycaster.addEventListener("click", () => {
-  //   console.dir(raycaster.components);
-  //   const target = raycaster.components.cursor.position;
-
-  //   if (firstTime) {
-  //     obj.setAttribute("position", target);
-  //     firstTime = false;
-  //   }
-  // });
+  obj.addEventListener("click", () => {
+    console.log(this.camera.el.object3D);
+    if (firstTime) {
+      const pos = this.camera.el.object3D.getWorldPosition();
+      obj.setAttribute("position", pos);
+      firstTime = false;
+    }
+  });
 }
 document.addEventListener("DOMContentLoaded", function (event) {
   const scene = document.querySelector("a-scene");
