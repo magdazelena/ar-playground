@@ -6,14 +6,35 @@
     <title>demo</title>
     <script src="https://aframe.io/releases/1.0.4/aframe.min.js"></script>
     <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://rawgit.com/dbradleyfl/aframe-gridhelper/master/dist/aframe-gridhelper-component.min.js"></script>
+
+    <!-- <script>
+      AFRAME.registerComponent("rotation-reader", {
+        /**
+         * We use IIFE (immediately-invoked function expression) to only allocate one
+         * vector or euler and not re-create on every tick to save memory.
+         */
+        tick: (function () {
+          var position = new THREE.Vector3();
+          var quaternion = new THREE.Quaternion();
+
+          return function () {
+            this.el.object3D.getWorldPosition(position);
+            this.el.object3D.getWorldQuaternion(quaternion);
+          };
+        })(),
+      });
+    </script> -->
     <script src="./scripts/index.js"></script>
   </head>
   <body style="margin: 0px; overflow: hidden">
-    <a-scene embedded arjs>
-      <a-entity
+    <a-scene gridhelper arjs>
+      <!-- <a-entity
         movement-controls="fly: true; speed: 0.1"
         camera="active: true"
+        id="camera"
         look-controls
+        orbit-controls
         position="0 1.6 0"
         ar-raycaster
         raycaster="objects: [data-raycastable]; showLine: true; useWorldCoordinates: true;"
@@ -26,8 +47,11 @@
           material="color: black; shader: flat"
         >
         </a-entity>
+      </a-entity> -->
+      <a-entity id="rig" position="0 0 -9" axis bb>
+        <a-camera id="focus-camera" active axis></a-camera>
       </a-entity>
-      <a-entity id="obj" raycastable position="0 0 -10">
+      <a-entity id="obj" position="0 0 -10">
         <a-box
           width="0.25"
           height="0.25"
