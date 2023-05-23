@@ -1,3 +1,5 @@
+import * as THREE from "three";
+import { FirstPersonControls } from "three/addons/controls/FirstPersonControls.js";
 function onSceneLoaded() {
   const raycaster = document.querySelector("[ar-raycaster]");
   const cursor = document.querySelector("#cursor");
@@ -16,7 +18,7 @@ function onSceneLoaded() {
   controls.connect();
 
   // Add FirstPersonControls for user movement
-  var firstPersonControls = new THREE.FirstPersonControls(camera, window);
+  var firstPersonControls = new FirstPersonControls(camera, window);
   firstPersonControls.movementSpeed = 1; // Adjust movement speed as needed
   firstPersonControls.lookSpeed = 0.1; // Adjust look speed as needed
   firstPersonControls.lookVertical = true;
