@@ -1,103 +1,55 @@
-import * as THREE from "three";
 import { FirstPersonControls } from "three/addons/controls/FirstPersonControls.js";
-function onSceneLoaded() {
-  const raycaster = document.querySelector("[ar-raycaster]");
-  const cursor = document.querySelector("#cursor");
-  const obj = document.querySelector("#obj");
-  const rig = document.querySelector("#rig");
-  let firstTime = true;
-  let count = 0;
-  var objectWrapper = document.getElementById("objectWrapper");
 
-  var scene = rig.object3D;
-  var camera = scene.children[0].children.find(
-    (el) => el.type === "PerspectiveCamera"
-  );
-  console.log(camera);
-  var controls = new THREE.DeviceOrientationControls(camera.el.object3D);
-  controls.connect();
+window.addEventListener("DOMContentLoaded", function () {
+  var sceneEl = document.querySelector("a-scene");
 
-  // Add FirstPersonControls for user movement
-  var firstPersonControls = new FirstPersonControls(camera, window);
-  firstPersonControls.movementSpeed = 1; // Adjust movement speed as needed
-  firstPersonControls.lookSpeed = 0.1; // Adjust look speed as needed
-  firstPersonControls.lookVertical = true;
+  AFRAME.registerComponent("first-person-controls", {
+    init: function () {
+      this.cameraRigEl = document.querySelector("#rig");
+      this.camera = document.querySelector("#camera");
+      // Set initial position of the camera rig based on the camera's current position
+      this.cameraRigEl.object3D.position.copy(this.camera.object3D.position);
 
-  function animate() {
-    requestAnimationFrame(animate);
+      // Set the initial rotation of the camera rig based on the camera's current rotation
+      this.cameraRigEl.object3D.rotation.copy(this.camera.object3D.rotation);
+      this.controls = new FirstPersonControls(
+        this.camera.object3D,
+        this.camera.parentElement
+      );
+      this.controls.lookSpeed = 0.5;
+      this.controls.movementSpeed = 10;
+      this.controls.noFly = true;
+      this.controls.lookVertical = true;
+    },
+    tick: function (time, delta) {
+      this.cameraRigEl.object3D.position.copy(this.camera.object3D.position);
 
-    // Update controls
-    controls.update();
+      // Update the rotation of the camera rig based on the camera's current rotation
+      this.cameraRigEl.object3D.rotation.copy(this.camera.object3D.rotation);
 
-    // Update FirstPersonControls for user movement
-    firstPersonControls.update();
+      this.controls.update(delta / 1000);
+    },
+  });
+  AFRAME.registerComponent("scene-setup", {
+    init: function () {
+      this.objectEl = document.querySelector("#object");
+      this.cameraRigEl = document.querySelector("#rig");
 
-    // Synchronize object wrapper rotation with the camera
-    var cameraRotation = new THREE.Quaternion();
-    camera.el.object3D.getWorldQuaternion(cameraRotation);
-    objectWrapper.object3D.setRotationFromQuaternion(cameraRotation);
+      // Set initial camera position
+      this.objectEl.object3D.position.set(0, 0, 0);
+
+      // Add FirstPersonControls to cameraRig
+      this.cameraRigEl.setAttribute("first-person-controls", "");
+    },
+  });
+  if (sceneEl.hasLoaded) {
+    run();
+  } else {
+    sceneEl.addEventListener("loaded", run);
   }
-
-  animate();
-  // raycaster.addEventListener("raycaster-intersection", (event) => {
-  //   count += 1;
-  //   if (firstTime) return (firstTime = false);
-  //   alert("hey" + count);
-  //   const rigCamera = rig.querySelector("#focus-camera");
-  //   rigCamera.setAttribute("camera", "active", true);
-  // });
-  // window.addEventListener("mouseup", handleDeviceOrientation, true);
-  // if (window.DeviceOrientationEvent) {
-  //   var rotationOffset = { x: 0, y: 0, z: 0 };
-
-  //   // Update rotation offset based on device orientation
-  //   window.addEventListener("deviceorientation", function (e) {
-  //     rotationOffset = { x: e.beta, y: e.gamma, z: e.alpha };
-  //   });
-  //   window.addEventListener("devicemotion", function (e) {
-  //     var objectWrapper = document.getElementById("rig");
-  //     var rotation = objectWrapper.getAttribute("rotation");
-
-  //     rotation.x = rotationOffset.x + (e.rotationRate.beta || 0);
-  //     rotation.y = rotationOffset.y + (e.rotationRate.gamma || 0);
-  //     rotation.z = rotationOffset.z + (e.rotationRate.alpha || 0);
-
-  //     objectWrapper.setAttribute("rotation", rotation);
-  //   });
-
-  //   //window.addEventListener("deviceorientation", handleDeviceOrientation, true);
-  // } else {
-  //   console.log("DeviceOrientation API not supported");
-  // }
-
-  function handleDeviceOrientation(event) {
-    // Extract rotation values
-    var alpha = event.alpha; // Z-axis rotation
-    var beta = event.beta; // X-axis rotation
-    var gamma = event.gamma; // Y-axis rotation
-    console.log(event);
-    // Update camera rotation based on device rotation
-    var cameraEl = document.querySelector("#rig");
-    cameraEl.setAttribute("rotation", {
-      x: beta,
-      y: gamma,
-      z: alpha,
-    });
-    var objectWrapper = document.getElementById("objectWrapper");
-    objectWrapper.setAttribute("rotation", {
-      x: cameraEl.object3D.rotation.x,
-      y: 0,
-      z: 0,
-    });
-
-    document.querySelector("#helpers").textContent = `
-    z: ${Math.round(alpha)},
-    y: ${Math.round(gamma)},
-    x: ${Math.round(beta)},
-    `;
+  function run() {
+    var setupEl = document.createElement("a-entity");
+    setupEl.setAttribute("scene-setup", "");
+    sceneEl.appendChild(setupEl);
   }
-}
-document.addEventListener("DOMContentLoaded", function (event) {
-  const scene = document.querySelector("a-scene");
-  scene.addEventListener("loaded", onSceneLoaded);
 });
