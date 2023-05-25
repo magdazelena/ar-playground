@@ -8,11 +8,10 @@ window.addEventListener("DOMContentLoaded", function () {
       this.cameraRigEl = document.querySelector("#rig");
       this.cameraEl = document.querySelector("#camera");
       this.camera = this.cameraEl.object3D.children[0];
-      this.distance = 1.5;
+      this.distance = 2.0;
       this.scaleFactor = 1.0;
       // Set initial position of the camera rig based on the camera's current position
       this.cameraRigEl.object3D.position.copy(this.camera.position);
-
       // Set the initial rotation of the camera rig based on the camera's current rotation
       this.cameraRigEl.object3D.rotation.copy(this.camera.rotation);
 
@@ -40,11 +39,10 @@ window.addEventListener("DOMContentLoaded", function () {
       var position = new THREE.Vector3(0, 0, -this.distance);
       position.applyQuaternion(this.camera.quaternion);
       position.add(this.camera.position);
-
       // Update the position of the object in the world coordinates
       var objectEl = document.querySelector("#object");
       objectEl.object3D.position.copy(position);
-      objectEl.object3D.scale.set(
+      this.helperObject.scale.set(
         this.scaleFactor,
         this.scaleFactor,
         this.scaleFactor
@@ -62,7 +60,7 @@ window.addEventListener("DOMContentLoaded", function () {
       this.distance -= accelerationZ * 0.1; // Adjust the sensitivity as needed
 
       // Clamp the distance within a specific range
-      this.distance = Math.max(0.5, Math.min(5, this.distance));
+      this.distance = Math.max(0.5, Math.min(10, this.distance));
       this.scaleFactor = Math.max(1.0, Math.min(0.1, 1.0 / this.distance));
     },
   });
@@ -74,11 +72,34 @@ window.addEventListener("DOMContentLoaded", function () {
       // Set initial camera position
       cameraRigEl.object3D.position.set(0, 0, 0);
 
-      // Set initial object position
-      objectEl.object3D.position.copy(cameraRigEl.object3D.position);
-
+      objectEl.object3D.position.set(0, 6, -10); // Adjust the initial distance as needed
+      objectEl.object3D.scale.set(0.5, 0.5, 0.5);
       // Add FirstPersonControls to cameraRig
       cameraRigEl.setAttribute("first-person-controls", "");
+      this.handleOrientation = this.handleOrientation.bind(this);
+      window.addEventListener(
+        "deviceorientation",
+        this.handleOrientation,
+        true
+      );
+    },
+    remove: function () {
+      window.removeEventListener(
+        "deviceorientation",
+        this.handleOrientation,
+        true
+      );
+    },
+    handleOrientation: function (event) {
+      var objectEl = document.querySelector("#object");
+      var alpha = event.alpha || 0; // Z-axis rotation (compass heading)
+      var beta = event.beta || 0; // X-axis rotation (front-to-back tilt)
+      var gamma = event.gamma || 0; // Y-axis rotation (left-to-right tilt)
+
+      // Adjust the object's rotation based on the device tilt
+      objectEl.object3D.rotation.x = (beta / 180) * Math.PI; // Adjust the sign (+/-) if needed
+      objectEl.object3D.rotation.y = (-gamma / 180) * Math.PI;
+      objectEl.object3D.rotation.z = (alpha / 180) * Math.PI; // Adjust the sign (+/-) if needed
     },
   });
   if (sceneEl.hasLoaded) {
