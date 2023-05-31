@@ -3,6 +3,16 @@ import { FirstPersonControls } from "three/addons/controls/FirstPersonControls.j
 window.addEventListener("DOMContentLoaded", function () {
   var sceneEl = document.querySelector("a-scene");
 
+  //helpers
+  const axesHelper = new THREE.AxesHelper(5);
+  sceneEl.object3D.add(axesHelper);
+  const gridHelper = new THREE.GridHelper(20, 20);
+  sceneEl.object3D.add(gridHelper);
+  const light = new THREE.HemisphereLight(0xffffbb, 0x080820, 1);
+  const helper = new THREE.HemisphereLightHelper(light, 20);
+  sceneEl.object3D.add(helper);
+  //helpers
+
   AFRAME.registerComponent("first-person-controls", {
     init: function () {
       this.cameraRigEl = document.querySelector("#rig");

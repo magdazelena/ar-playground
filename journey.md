@@ -32,3 +32,4 @@ This resulted in stable 3D scene with live camera feed in the background.
 2. There must be some way to detect moving with the phone, ex. taking steps. Steps counter do it and I am sure they don't use GPS for that. I want to explore this.
 3. The object still doesn't seem to be locked in virtual world, it appears to follow the user. I want it to "stay" within virtual space, hence the distance detection by steps measure is crucial.
 4. There must be a way to have some visual cues as helpers in A-Frame. So far I tried [this one](https://github.com/fcor/arjs-gestures) and [this one](https://github.com/c-frame/aframe-extras/tree/master/src/controls). Maybe I will use native to Three.js in the future.
+   //beacons
